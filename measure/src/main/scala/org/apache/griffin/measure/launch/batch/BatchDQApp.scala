@@ -45,7 +45,7 @@ case class BatchDQApp(allParam: GriffinConfig) extends DQApp {
   var dqContext: DQContext = _
 
   def retryable: Boolean = false
-
+  // 初始化并创建sparkSession、注册griffin自定义udf
   def init: Try[_] = Try {
     // build spark 2.0+ application context
     val conf = new SparkConf().setAppName(metricName)
@@ -59,35 +59,36 @@ case class BatchDQApp(allParam: GriffinConfig) extends DQApp {
     // register udf
     GriffinUDFAgent.register(sparkSession)
   }
-
+  // 定时任务执行方法
   def run: Try[Boolean] = {
     val result = CommonUtils.timeThis({
       val measureTime = getMeasureTime
       val contextId = ContextId(measureTime)
-
+      // 根据配置获取数据源，即config-batch.json的data.sources配置，读取avro文件数据，有source和target两个数据源
       // get data sources
       val dataSources =
         DataSourceFactory.getDataSources(sparkSession, null, dqParam.getDataSources)
+      // 数据源初始化
       dataSources.foreach(_.init())
-
+      // 创建griffin执行上下文
       // create dq context
       dqContext =
         DQContext(contextId, metricName, dataSources, sinkParams, BatchProcessType)(sparkSession)
-
+      // 根据配置，输入结果到 console 和 elasticsearch
       // start id
       val applicationId = sparkSession.sparkContext.applicationId
       dqContext.getSinks.foreach(_.open(applicationId))
-
+      // 创建数据检查对比job
       // build job
       val dqJob = DQJobBuilder.buildDQJob(dqContext, dqParam.getEvaluateRule)
-
+      // 执行数据对比job，根据在web端配置的步骤执行，demo主要执行配置中的rule sql，将执行结果写入sink中
       // dq job execute
       dqJob.execute(dqContext)
     }, TimeUnit.MILLISECONDS)
 
     // clean context
     dqContext.clean()
-
+    // 输出结束标记
     // finish
     dqContext.getSinks.foreach(_.close())
 

@@ -66,6 +66,7 @@ object DataConnectorFactory extends Loggable {
       streamingCacheClientOpt: Option[StreamingCacheClient]): Try[DataConnector] = {
     val conType = dcParam.getType
     Try {
+      // 数据源映射
       conType match {
         case HiveRegex() => HiveBatchDataConnector(sparkSession, dcParam, tmstCache)
         case AvroRegex() => AvroBatchDataConnector(sparkSession, dcParam, tmstCache)
@@ -101,7 +102,7 @@ object DataConnectorFactory extends Loggable {
       case _ => throw new Exception("streaming connector creation error!")
     }
   }
-
+  // 自定义数据源标识方法
   private def getCustomConnector(
       sparkSession: SparkSession,
       ssc: StreamingContext,

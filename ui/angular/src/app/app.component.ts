@@ -23,6 +23,7 @@ import {UserService} from "./service/user.service";
 import {Location, LocationStrategy, HashLocationStrategy} from "@angular/common";
 import {HttpClient} from "@angular/common/http";
 
+// import { TranslateService } from "@ngx-translate/core";
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
@@ -46,6 +47,12 @@ export class AppComponent implements AfterViewChecked, OnInit {
   ngOnInit() {
     this.ntAccount = this.userService.getCookie("ntAccount");
     this.fullName = this.userService.getCookie("fullName");
+    // // --- set i18n begin ---
+    // this.translateService.addLangs(["zh", "en"]);
+    // this.translateService.setDefaultLang("zh");
+    // const browserLang = this.translateService.getBrowserLang();
+    // this.translateService.use(browserLang.match(/zh|en/) ? browserLang : 'zh');
+    // // --- set i18n end ---
   }
 
   constructor(
@@ -54,6 +61,7 @@ export class AppComponent implements AfterViewChecked, OnInit {
     private location: Location,
     public serviceService: ServiceService,
     public userService: UserService
+    // public translateService: TranslateService
   ) {
   }
 

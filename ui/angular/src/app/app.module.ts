@@ -61,6 +61,22 @@ import {JobDetailComponent} from './job/job-detail/job-detail.component';
 import {StreamingComponent} from './job/create-job/streaming/streaming.component';
 import {RawComponent} from "./measure/create-measure/raw/raw.component";
 
+// //引入TranslateModule模块
+// import {
+//   TranslateModule,
+//   TranslateLoader,
+//   TranslateService
+// } from '@ngx-translate/core';
+// import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+//
+// import {Http} from "@angular/http";
+// //配置i18n
+// export function createTranslateHttpLoader(http: Http) {
+//   // @ts-ignore
+//   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+//
+// }
+
 
 const appRoutes: Routes = [
   {
@@ -191,6 +207,13 @@ const appRoutes: Routes = [
       appRoutes,
       {useHash: true},
     ),
+    // TranslateModule.forRoot({//配置i18n
+    //   loader: {
+    //     provide: TranslateLoader,
+    //     useFactory: (createTranslateHttpLoader),
+    //     deps: [Http]
+    //   }
+    // }),
     MatNativeDateModule,
     MatDatepickerModule
   ],

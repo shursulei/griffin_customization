@@ -46,7 +46,7 @@ object DataSourceFactory extends Loggable {
       index: Int): Option[DataSource] = {
     val name = dataSourceParam.getName
     val timestampStorage = TimestampStorage()
-
+    // streaming 数据缓存
     // for streaming data cache
     val streamingCacheClientOpt = StreamingCacheClientFactory.getClientOpt(
       sparkSession,
@@ -54,9 +54,9 @@ object DataSourceFactory extends Loggable {
       name,
       index,
       timestampStorage)
-
+    // 获取数源连接
     val connectorParamsOpt = dataSourceParam.getConnector
-
+    // 从连接工厂获取连接
     connectorParamsOpt match {
       case Some(connectorParam) =>
         val dataConnectors = DataConnectorFactory.getDataConnector(

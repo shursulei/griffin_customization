@@ -47,7 +47,7 @@ object Application extends Loggable {
 
     val envParamFile = args(0)
     val dqParamFile = args(1)
-
+    // 参数,环境参数和规则参数
     info(envParamFile)
     info(dqParamFile)
 
@@ -67,6 +67,8 @@ object Application extends Loggable {
     val allParam: GriffinConfig = GriffinConfig(envParam, dqParam)
 
     // choose process
+    // 根据数据源配置选择数据源
+    // 从数据源配置 process.type 得到配置类型为 batch
     val procType = ProcessType.withNameWithDefault(allParam.getDqConfig.getProcType)
     val dqApp: DQApp = procType match {
       case BatchProcessType => BatchDQApp(allParam)
@@ -77,7 +79,8 @@ object Application extends Loggable {
     }
 
     startup()
-
+    // 初始化 griffin 定时任务执行环境
+    // 具体代码见下个代码块，主要逻辑是创建 sparkSession 和注册griffin自定义的spark udf
     // dq app init
     dqApp.init match {
       case Success(_) =>
@@ -104,7 +107,7 @@ object Application extends Loggable {
           sys.exit(-5)
         }
     }
-
+    // 关闭定时任务
     // dq app end
     dqApp.close match {
       case Success(_) =>
